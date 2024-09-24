@@ -42,7 +42,7 @@ print(average_scores_by_year, n = 1000)
 ```
 Question 2: For this code, I knew that I needed to change the facility open dates to a date that was easy to understand and visualize. So I did this by using the as.date function to convert it into a date that R could understand and is standardized. I then used the %Y to change the dates to only be grouped by their years. I then used the group_by function to group the data by years and the summarize(mean_score) to only look at the mean scores for the different years. I then printed the average scores by year and did n=1000 to ensure that all data would be seen when rendered.
 
-When comparing the year that restaurants opened with their average inspection score, there is no clear trend in age vs score. The average inspection score in 2017 was 97.000 while the average inspection score in 2022 was 97.4, these are so similar that there is no clear trend in the data. The inspection scores did decline after 2017 and were at their lowest in 2020 but then they increased again. I assume that maybe data from 2020 was lowest because of the impacts of COVID and maybe low sample sizes. 
+Results: When comparing the year that restaurants opened with their average inspection score, there is no clear trend in age vs score. The average inspection score in 2017 was 97.000 while the average inspection score in 2022 was 97.4, these are so similar that there is no clear trend in the data. The inspection scores did decline after 2017 and were at their lowest in 2020 but then they increased again. I assume that maybe data from 2020 was lowest because of the impacts of COVID and maybe low sample sizes. 
 
 ```{r}
 data = data |>
@@ -76,7 +76,9 @@ average_scores_by_inspector = data |>
 print(average_scores_by_inspector, n=1000)
 
 ```
-Similar to the last question, I grouped by the mean inspection scores for each inspector to see if certain inspectors have significantly higher or lower scores than others. When looking at all of the inspectors scores, they are generally very similar to one another, ranging from again 94-97. However, one inspector, Thomas Jumalon has a significantly lower average score of 89.00000 when compared to the others. My assumption is that he was the inspector who got the outlier score of 0 which dragged down his averages. 
+Question 4: Similar to the last question, I grouped by the mean inspection scores for each inspector to see if certain inspectors have significantly higher or lower scores than others. I did this by using the group_by(INSPECTOR) to group the data by the inspectors and looked at their mean scores. 
+
+Results: When looking at all of the inspectors scores, they are generally very similar to one another, ranging from again 94-97. However, one inspector, Thomas Jumalon has a significantly lower average score of 89.00000 when compared to the others. My assumption is that he was the inspector who got the outlier score of 0 which dragged down his averages. 
 
 
 ```{r}
@@ -94,8 +96,9 @@ print(average_scores_by_inspector, n=1000)
 ggplot(average_scores_by_inspector, aes(x = INSPECTOR, y = sample_size)) +
   geom_col()
 ```
+Question 5: I then wanted to see if sample size could affect the data and I did this by basically doing the same code as above except I added a column for sample size in addition to the mean_sample size column. I then made a graph to visualize this data better and again used the ggplot to graph. 
 
-After analyzing the sample sizes of each inspector, I believe that it is safe to say that there is definitely some sample size bias that could be affecting the data. The range in sample sizes is so drastic (1-350) that I believe some of the data should be considered more reliable than others. For instance, Thomas Jumalon, whose data stands out as being lower than the others, only has 3 samples that were used to calculate the mean. Therefore, one bad score could drastically sway his data, causing an inaccurately low mean score. Because of Jason Dunn's sample size being 350 samples, I think we should take the mean of his samples to be a lot more accurate and representative of the data. I attempted to make a bar graph to represent this data and while it is very good in showing how drastically different the sample sizes are, it is hard to distinguish between the different inspectors and their mean values. 
+Results: After analyzing the sample sizes of each inspector, I believe that it is safe to say that there is definitely some sample size bias that could be affecting the data. The range in sample sizes is so drastic (1-350) that I believe some of the data should be considered more reliable than others. For instance, Thomas Jumalon, whose data stands out as being lower than the others, only has 3 samples that were used to calculate the mean. Therefore, one bad score could drastically sway his data, causing an inaccurately low mean score. Because of Jason Dunn's sample size being 350 samples, I think we should take the mean of his samples to be a lot more accurate and representative of the data. I attempted to make a bar graph to represent this data and while it is very good in showing how drastically different the sample sizes are, it is hard to distinguish between the different inspectors and their mean values. 
 
 ```{r}
 average_scores_by_facility = data  |>
@@ -106,7 +109,9 @@ average_scores_by_facility = data  |>
 print(average_scores_by_facility)
 ```
 
-After looking at the data, it is clear that restaurants did not get higher scores than other facilities, in fact, facilities had the lowest mean score among all of the facilities. The restaurants had a mean score of 96.7, while the highest score was the Elderly Nutrition Sites which had a mean score of 99.3. This makes sense based on the different levels of standard among restaurants and a place that is focused on nutrition and health.  
+Question 6: For this question, they wanted us to group by the different facility types and compared the mena scores for the different facilities. I did this in the same process by using the group_by functin and mean_score function. 
+
+Result: After looking at the data, it is clear that restaurants did not get higher scores than other facilities, in fact, facilities had the lowest mean score among all of the facilities. The restaurants had a mean score of 96.7, while the highest score was the Elderly Nutrition Sites which had a mean score of 99.3. This makes sense based on the different levels of standard among restaurants and a place that is focused on nutrition and health.  
 
 ```{r}
 
@@ -119,11 +124,12 @@ labs(title= "Distribution of Inspection Scores" ,
      y = "Amount" ,
      x = "Inspection Score")
 ```
+Question 7 (Including all parts below): The code I did for everything below is very similar to the code above except I used the restaurants_data and used that for all of the different parts. I first created restaurants_data that was filtered to only looking for data from restaurants. I then used this restaurants_data in all other parts of my code to ensure that I was only using restaurant data. 
 ```{r}
-data = data |>
+restaurants_data = restaurants_data |>
   filter(FACILITYTYPE == "Restaurant") 
   
-average_scores_by_year = data |>
+average_scores_by_year = restaurants_data |>
   group_by(DATE_) |>
   summarize(mean_score = mean(SCORE)) |>
   ungroup()
@@ -131,11 +137,8 @@ average_scores_by_year = data |>
 print(average_scores_by_year, n = 1000)
 ```
 
-Again, when focusing on just restaurant data, there is no clear trend in inspection scores when grouped by year. 
+Result: Again, when focusing on just restaurant data, there is no clear trend in inspection scores when grouped by year. Although it looks like there not be as much older data for restuanrts considering that there are no inspection scores from 2017 - this could definitely skew the ata. 
 ```{r}
-
-restaurants_data = data |>
-  filter(FACILITYTYPE == "Restaurant")
 
 average_scores_by_city_restaurants = restaurants_data |>
   mutate(CITY = str_to_upper(CITY)) |>
@@ -154,11 +157,9 @@ average_scores_by_city_restaurants = restaurants_data |>
 
 print(average_scores_by_city_restaurants, n=1000)
 ```
-When grouping the mean scores of restaurants for different cities, there actually are more differences than when we were previously looking at all facilities. In fact, Clayton has a drastically lower score when just analyzing restaurants and the scores overall appear lower for the restaurants than when comparing all facilities. 
+Result: When grouping the mean scores of restaurants for different cities, there actually are more differences than when we were previously looking at all facilities. In fact, Clayton has a drastically lower score when just analyzing restaurants and the scores overall appear lower for the restaurants than when comparing all facilities. It looks like there are no N/A values for the restaurant data which tells us that there is less ambiguity in the restaurant data as opposed to the other facilities which have a lot of missing values for the location. 
 
 ```{r}
-restaurants_data = data |>
-  filter(FACILITYTYPE == "Restaurant")
 
 average_scores_by_inspector_restaurants = restaurants_data |>
   group_by(INSPECTOR) |>
@@ -167,10 +168,8 @@ average_scores_by_inspector_restaurants = restaurants_data |>
   
 print(average_scores_by_inspector_restaurants, n=1000)
 ```
-The trend in inspector data is similar to before, most inspectors have generally the same trends in inspection scores around 94-100 but once again, Thomas Jumalon has a drastically lower score than everyone else. 
+Result: The trend in inspector data is similar to before, most inspectors have generally the same trends in inspection scores around 94-100 but once again, Thomas Jumalon has a drastically lower score than everyone else. 
 ```{r}
-restaurants_data = data |>
-  filter(FACILITYTYPE == "Restaurant")
 
 average_scores_by_inspector_restaurants = restaurants_data |>
   group_by(INSPECTOR) |>
@@ -182,6 +181,6 @@ average_scores_by_inspector_restaurants = restaurants_data |>
 
 print(average_scores_by_inspector_restaurants, n=1000)
 ```
-Again, I believe that the sample sizes can definitely impact and skew the data. Once again, there is a very large range in the sample sizes which can seriously cause problems when trying to compare the data because one highly low number can drag down the average significantly. 
+Result: Again, I believe that the sample sizes can definitely impact and skew the data. Once again, there is a very large range in the sample sizes which can seriously cause problems when trying to compare the data because one highly low number can drag down the average significantly. 
 
 
