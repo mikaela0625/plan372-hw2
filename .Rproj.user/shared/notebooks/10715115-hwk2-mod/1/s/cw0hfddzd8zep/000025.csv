@@ -1,0 +1,6 @@
+"0",""
+"0","restaurants_data = data |>"
+"0","  filter(FACILITYTYPE == ""Restaurant"")"
+"0",""
+"0","ggplot(restaurants_data, aes(x=SCORE)) +"
+"0","  geom_histogram(binwidth=1) "

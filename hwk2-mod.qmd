@@ -1,0 +1,187 @@
+---
+title: "Restaurant Analysis"
+author: "Mikaela Deininger"
+format: html
+editor: visual
+repository link: https://github.com/mikaela0625/plan372-hw2.git
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+
+```
+
+```{r}
+data = read_csv(here::here("restaurant_inspections.csv"))
+```
+
+```{r}
+head(data)
+```
+
+```{r}
+ggplot(data, aes(x=SCORE)) +
+  geom_histogram(binwidth=1) +
+  labs(title= "Distribution of Inspection Scores" ,
+     y = "Amount" ,
+     x = "Inspection Score")
+```
+Question 1: distribution of inspection scores using a histogram. For this question I used the ggplot function to plot the date and I used aes(x=SCORE) which specifies that the way I want to plot the data is with the scores plotted on the x-axis. I used geom_histogram to specify that I wanted the plot to be a histogram and I messed around with the binwidth to make it more aesthetic looking. I used the labs code to add labels to then graph to make it more aesthetic and easier to read.I named the title of the graph "Distribution of Inspection Scores and labeled the x and y axis appropriately. 
+```{r}
+data = data |>
+  mutate(DATE_ = as.Date(DATE_)) |>
+  mutate(DATE_ = format(DATE_, "%Y")) 
+
+average_scores_by_year = data |>
+  group_by(DATE_) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+
+print(average_scores_by_year, n = 1000)
+```
+Question 2: For this code, I knew that I needed to change the facility open dates to a date that was easy to understand and visualize. So I did this by using the as.date function to convert it into a date that R could understand and is standardized. I then used the %Y to change the dates to only be grouped by their years. I then used the group_by function to group the data by years and the summarize(mean_score) to only look at the mean scores for the different years. I then printed the average scores by year and did n=1000 to ensure that all data would be seen when rendered.
+
+When comparing the year that restaurants opened with their average inspection score, there is no clear trend in age vs score. The average inspection score in 2017 was 97.000 while the average inspection score in 2022 was 97.4, these are so similar that there is no clear trend in the data. The inspection scores did decline after 2017 and were at their lowest in 2020 but then they increased again. I assume that maybe data from 2020 was lowest because of the impacts of COVID and maybe low sample sizes. 
+
+```{r}
+data = data |>
+  mutate(CITY = str_to_upper(CITY)) |>
+  mutate(CITY = recode(CITY,
+                       "HOLLY SPRINGS" = "HOLLY SPRINGS",
+                       "HOLLY SPRING" = "HOLLY SPRINGS",
+                       "FUQUAY VARINA" = "FUQUAY VARINA",
+                       "FUQUAY-VARINA" = "FUQUAY VARINA", 
+                       "MORRISVILLE" = "MORRISVILLE", 
+                       "MORRISVILE" = "MORRISVILLE")) 
+average_scores_by_city = data |>
+  group_by(CITY) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+
+print(average_scores_by_city, n=1000)
+
+```
+
+Question 3: For this question I knew that I needed to group the data based on the different cities that the inspections took place in order to compare them. But one problem with this is that there were different spellings of some of the cities that caused them to not group properly. So I first used the str_to_upper command to make everything capitalized and then I used the recode to ensure that all the different spellings of the name were grouped together. I then made an average_scores_by_city dataset and grouped the data by the different cities and the mean scores. There is some data that is missing as evidenced by the NA column which could affect the data and I looked at the number of missing data points for that and there was a significantly high amount of missing data so I think this could definitely affect the results.
+
+Results: When looking at the average inspection scores for each city, we see that there is not much of a difference between them. They all range from about 94-100, so there are no cities that are strong outliers and very different from the others.
+
+```{r}
+average_scores_by_inspector = data |>
+  group_by(INSPECTOR) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+  
+print(average_scores_by_inspector, n=1000)
+
+```
+Similar to the last question, I grouped by the mean inspection scores for each inspector to see if certain inspectors have significantly higher or lower scores than others. When looking at all of the inspectors scores, they are generally very similar to one another, ranging from again 94-97. However, one inspector, Thomas Jumalon has a significantly lower average score of 89.00000 when compared to the others. My assumption is that he was the inspector who got the outlier score of 0 which dragged down his averages. 
+
+
+```{r}
+average_scores_by_inspector = data |>
+  group_by(INSPECTOR) |>
+  summarize(
+    mean_score = mean(SCORE),
+    sample_size = n()
+  ) |>
+  ungroup()
+
+print(average_scores_by_inspector, n=1000)
+```
+```{r}
+ggplot(average_scores_by_inspector, aes(x = INSPECTOR, y = sample_size)) +
+  geom_col()
+```
+
+After analyzing the sample sizes of each inspector, I believe that it is safe to say that there is definitely some sample size bias that could be affecting the data. The range in sample sizes is so drastic (1-350) that I believe some of the data should be considered more reliable than others. For instance, Thomas Jumalon, whose data stands out as being lower than the others, only has 3 samples that were used to calculate the mean. Therefore, one bad score could drastically sway his data, causing an inaccurately low mean score. Because of Jason Dunn's sample size being 350 samples, I think we should take the mean of his samples to be a lot more accurate and representative of the data. I attempted to make a bar graph to represent this data and while it is very good in showing how drastically different the sample sizes are, it is hard to distinguish between the different inspectors and their mean values. 
+
+```{r}
+average_scores_by_facility = data  |>
+  group_by(FACILITYTYPE) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+
+print(average_scores_by_facility)
+```
+
+After looking at the data, it is clear that restaurants did not get higher scores than other facilities, in fact, facilities had the lowest mean score among all of the facilities. The restaurants had a mean score of 96.7, while the highest score was the Elderly Nutrition Sites which had a mean score of 99.3. This makes sense based on the different levels of standard among restaurants and a place that is focused on nutrition and health.  
+
+```{r}
+
+restaurants_data = data |>
+  filter(FACILITYTYPE == "Restaurant")
+
+ggplot(restaurants_data, aes(x=SCORE)) +
+  geom_histogram(binwidth=1) 
+labs(title= "Distribution of Inspection Scores" ,
+     y = "Amount" ,
+     x = "Inspection Score")
+```
+```{r}
+data = data |>
+  filter(FACILITYTYPE == "Restaurant") 
+  
+average_scores_by_year = data |>
+  group_by(DATE_) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+
+print(average_scores_by_year, n = 1000)
+```
+
+Again, when focusing on just restaurant data, there is no clear trend in inspection scores when grouped by year. 
+```{r}
+
+restaurants_data = data |>
+  filter(FACILITYTYPE == "Restaurant")
+
+average_scores_by_city_restaurants = restaurants_data |>
+  mutate(CITY = str_to_upper(CITY)) |>
+  mutate(CITY = recode(CITY,
+                       "HOLLY SPRINGS" = "HOLLY SPRINGS",
+                       "HOLLY SPRING" = "HOLLY SPRINGS",
+                       "FUQUAY VARINA" = "FUQUAY VARINA",
+                       "FUQUAY-VARINA" = "FUQUAY VARINA", 
+                       "MORRISVILLE" = "MORRISVILLE", 
+                       "MORRISVILE" = "MORRISVILLE")) 
+
+average_scores_by_city_restaurants = restaurants_data |>
+  group_by(CITY) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+
+print(average_scores_by_city_restaurants, n=1000)
+```
+When grouping the mean scores of restaurants for different cities, there actually are more differences than when we were previously looking at all facilities. In fact, Clayton has a drastically lower score when just analyzing restaurants and the scores overall appear lower for the restaurants than when comparing all facilities. 
+
+```{r}
+restaurants_data = data |>
+  filter(FACILITYTYPE == "Restaurant")
+
+average_scores_by_inspector_restaurants = restaurants_data |>
+  group_by(INSPECTOR) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+  
+print(average_scores_by_inspector_restaurants, n=1000)
+```
+The trend in inspector data is similar to before, most inspectors have generally the same trends in inspection scores around 94-100 but once again, Thomas Jumalon has a drastically lower score than everyone else. 
+```{r}
+restaurants_data = data |>
+  filter(FACILITYTYPE == "Restaurant")
+
+average_scores_by_inspector_restaurants = restaurants_data |>
+  group_by(INSPECTOR) |>
+  summarize(
+    mean_score = mean(SCORE),
+    sample_size = n()
+  ) |>
+  ungroup()
+
+print(average_scores_by_inspector_restaurants, n=1000)
+```
+Again, I believe that the sample sizes can definitely impact and skew the data. Once again, there is a very large range in the sample sizes which can seriously cause problems when trying to compare the data because one highly low number can drag down the average significantly. 
+
+

@@ -1,0 +1,2 @@
+"0","ggplot(average_scores_by_inspector, aes(x = INSPECTOR, y = sample_size)) +"
+"0","  geom_col()"

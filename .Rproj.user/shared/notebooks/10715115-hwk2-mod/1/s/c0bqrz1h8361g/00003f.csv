@@ -1,0 +1,6 @@
+"0","average_scores_by_facility = data  |>"
+"0","  group_by(FACILITYTYPE) |>"
+"0","  summarize(mean_score = mean(SCORE)) |>"
+"0","  ungroup()"
+"0",""
+"0","print(average_scores_by_facility)"

@@ -1,0 +1,63 @@
+---
+title: "Restaurant Analysis"
+author: "Mikaela Deininger"
+format: html
+editor: visual
+---
+
+```{r}
+library(tidyverse)
+library(lubridate)
+
+```
+
+```{r}
+data = read_csv(here::here("restaurant_inspections.csv"))
+```
+
+```{r}
+head(data)
+```
+
+```{r}
+ggplot(data, aes(x=SCORE)) +
+  geom_histogram(binwidth=1) +
+labs(title= "Distribution of Inspection Scores" ,
+     y = "Amount" ,
+     x = "Inspection Score")
+```
+```{r}
+data <- data |>
+  mutate(CITY = str_to_upper(CITY)) |>
+  mutate(CITY = recode(CITY,
+                       "HOLLY SPRINGS" = "HOLLY SPRINGS",
+                       "HOLLY SPRING" = "HOLLY SPRINGS",
+                       "FUQUAY VARINA" = "FUQUAY VARINA",
+                       "FUQUAY-VARINA" = "FUQUAY VARINA", 
+                       "MORRISVILLE" = "MORRISVILLE", 
+                       "MORRISVILE" = "MORRISVILLE")) 
+average_scores_by_city <- data |>
+  group_by(CITY) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+
+print(average_scores_by_city)
+
+```
+When looking at the average inspection scores for each city, we see that there is not much of a difference between them. They all range from about 94-100, so there are no cities that are strong outliers and very different from the others.
+
+```{r}
+average_scores_by_inspector <- data |>
+  group_by(INSPECTOR) |>
+  summarize(mean_score = mean(SCORE)) |>
+  ungroup()
+  
+print(average_scores_by_inspector)
+
+```
+Similar to the last question, I grouped by the mean inspection scores for each inspector to see if certain inspectors have significantly higher or lower scores than others. When looking at all of the inspectors scores, they are generally very similar to one another, ranging from again 94-97. However, one inspector, Thomas Jumalon has a significantly lower average score of 89.00000 when compared to the others. My assumption is that he was the inspector who got the outlier score of 0 which dragged down his averages. 
+
+
+
+
+

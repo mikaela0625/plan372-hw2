@@ -1,0 +1,5 @@
+"0","ggplot(data, aes(x=SCORE)) +"
+"0","  geom_histogram(binwidth=1) +"
+"0","labs(title= ""Distribution of Inspection Scores"" ,"
+"0","     y = ""Amount"" ,"
+"0","     x = ""Inspection Score"")"
